@@ -1,51 +1,41 @@
-const { MongoClient } = require('mongodb');
-require('dotenv').config();
+
+import { MongoClient } from 'mongodb';
+
+const host = process.env.DB_HOST || 'localhost';
+const port = process.env.DB_PORT || 27017;
+const database = process.env.DB_DATABASE || 'files_manager';
+const url = `mongodb://${host}:${port}/`;
 
 class DBClient {
   constructor() {
-    const host = process.env.DB_HOST || 'localhost';
-    const port = process.env.DB_PORT || '27017';
-    const database = process.env.DB_DATABASE || 'files_manager';
-    const url = `mongodb://${host}:${port}`;
-
-    this.client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
-
-    this.client.connect()
-      .then(() => {
-        this.db = this.client.db(database);
-        console.log('Connected successfully to MongoDB server');
-      })
-      .catch((err) => {
-        console.error('MongoDB connection error:', err);
-      });
+    this.db = null;
+    MongoClient.connect(url, { useUnifiedTopology: true }, (error, client) => {
+      if (error) console.log(error);
+      this.db = client.db(database);
+      this.db.createCollection('users');
+      this.db.createCollection('files');
+    });
   }
 
   isAlive() {
-    return this.client && this.client.isConnected();
+    return !!this.db;
   }
 
   async nbUsers() {
-    try {
-      const collection = this.db.collection('users');
-      const count = await collection.countDocuments();
-      return count;
-    } catch (error) {
-      console.error('Error counting users:', error);
-      return -1; // or handle the error as needed
-    }
+    return this.db.collection('users').countDocuments();
+  }
+
+  async getUser(query) {
+    console.log('QUERY IN DB.JS', query);
+    const user = await this.db.collection('users').findOne(query);
+    console.log('GET USER IN DB.JS', user);
+    return user;
   }
 
   async nbFiles() {
-    try {
-      const collection = this.db.collection('files');
-      const count = await collection.countDocuments();
-      return count;
-    } catch (error) {
-      console.error('Error counting files:', error);
-      return -1; // or handle the error as needed
-    }
+    return this.db.collection('files').countDocuments();
   }
 }
 
 const dbClient = new DBClient();
-module.exports = dbClient;
+export default dbClient;

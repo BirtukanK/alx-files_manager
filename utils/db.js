@@ -1,4 +1,3 @@
-
 import { MongoClient } from 'mongodb';
 
 const host = process.env.DB_HOST || 'localhost';

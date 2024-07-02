@@ -1,5 +1,5 @@
 import dbClient from '../utils/db';
-
+import redisClient from '../utils/redis';
 const crypto = require('crypto');
 
 class UsersController {
@@ -54,4 +54,4 @@ class UsersController {
   }
 }
 
-module.exports = UsersController;
+export default UsersController;

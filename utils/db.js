@@ -1,3 +1,4 @@
+
 import { MongoClient } from 'mongodb';
 
 const host = process.env.DB_HOST || 'localhost';
@@ -7,18 +8,13 @@ const url = `mongodb://${host}:${port}/`;
 
 class DBClient {
   constructor() {
-    this.client = null;
     this.db = null;
-    this.connect();
-  }
-
-  async connect() {
-    try {
-      this.client = await MongoClient.connect(url, { useUnifiedTopology: true });
-      this.db = this.client.db(database);
-    } catch (error) {
-      console.error('Error connecting to MongoDB:', error);
-    }
+    MongoClient.connect(url, { useUnifiedTopology: true }, (error, client) => {
+      if (error) console.log(error);
+      this.db = client.db(database);
+      this.db.createCollection('users');
+      this.db.createCollection('files');
+    });
   }
 
   isAlive() {

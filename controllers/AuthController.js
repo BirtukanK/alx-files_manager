@@ -6,6 +6,10 @@ const dbClient = require('../utils/db');
 class AuthController {
   static async getConnect(req, res) {
     try {
+      if (!dbClient.isAlive()) {
+        return res.status(500).json({ error: 'Database connection not established' });
+      }
+
       const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith('Basic ')) {
         return res.status(401).json({ error: 'Unauthorized' });

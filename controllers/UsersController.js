@@ -31,7 +31,6 @@ class UsersController {
       return res.status(500).json({ error: 'Internal Server Error' });
     }
   }
-
   static async getMe(req, res) {
     try {
       const token = req.headers['x-token'];

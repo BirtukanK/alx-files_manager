@@ -1,5 +1,6 @@
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
+
 const crypto = require('crypto');
 
 class UsersController {
@@ -31,6 +32,7 @@ class UsersController {
       return res.status(500).json({ error: 'Internal Server Error' });
     }
   }
+
   static async getMe(req, res) {
     try {
       const token = req.headers['x-token'];
